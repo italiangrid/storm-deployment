@@ -1,10 +1,14 @@
 #!/bin/bash
 set -ex
-tags=${tags:-"centos6"}
+
+if [ -z ${BRANCH_NAME+x} ]; then
+  echo "BRANCH_NAME is unset"
+  BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
+else
+  echo "BRANCH_NAME is set to '$BRANCH_NAME'"
+fi
 
 if [ -n "${DOCKER_REGISTRY_HOST}" ]; then
-  for t in ${tags}; do
-    docker tag italiangrid/storm-deployment:${t} ${DOCKER_REGISTRY_HOST}/italiangrid/storm-deployment:${t}
-    docker push ${DOCKER_REGISTRY_HOST}/italiangrid/storm-deployment:${t}
-  done
+  docker tag italiangrid/storm-deployment:${BRANCH_NAME} ${DOCKER_REGISTRY_HOST}/italiangrid/storm-deployment:${BRANCH_NAME}
+  docker push ${DOCKER_REGISTRY_HOST}/italiangrid/storm-deployment:${BRANCH_NAME}
 fi
